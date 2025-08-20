@@ -285,6 +285,11 @@ class PlaywrightEngine:
                 browser = p.chromium.launch(**self.__launch_kwargs())
 
             context = browser.new_context(**self.__context_kwargs())
+            
+            if self.stealth:
+                for script in self.__stealth_scripts():
+                    context.add_init_script(path=script)
+            
             page = context.new_page()
             page.set_default_navigation_timeout(self.timeout)
             page.set_default_timeout(self.timeout)
@@ -295,10 +300,6 @@ class PlaywrightEngine:
 
             if self.disable_resources:
                 page.route("**/*", intercept_route)
-
-            if self.stealth:
-                for script in self.__stealth_scripts():
-                    page.add_init_script(path=script)
 
             first_response = page.goto(url, referer=referer)
             page.wait_for_load_state(state="domcontentloaded")
@@ -389,6 +390,11 @@ class PlaywrightEngine:
                 browser = await p.chromium.launch(**self.__launch_kwargs())
 
             context = await browser.new_context(**self.__context_kwargs())
+            
+            if self.stealth:
+                for script in self.__stealth_scripts():
+                    await context.add_init_script(path=script)
+            
             page = await context.new_page()
             page.set_default_navigation_timeout(self.timeout)
             page.set_default_timeout(self.timeout)
@@ -399,10 +405,6 @@ class PlaywrightEngine:
 
             if self.disable_resources:
                 await page.route("**/*", async_intercept_route)
-
-            if self.stealth:
-                for script in self.__stealth_scripts():
-                    await page.add_init_script(path=script)
 
             first_response = await page.goto(url, referer=referer)
             await page.wait_for_load_state(state="domcontentloaded")
